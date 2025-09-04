@@ -1,0 +1,73 @@
+resources:
+  jobs:
+    Sales_Pipeline_Lab_Yutthana_LONGKHAM:
+      name: Sales Pipeline Lab - [Yutthana LONGKHAM]
+      tasks:
+        - task_key: N1_Validate_Sales_Data
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab4/N1_Validate_Sales_Data
+            base_parameters:
+              database_name: module2_db
+              sales_table_name: bronze_sales
+              force_valid_status_for_testing: "True"
+            source: WORKSPACE
+        - task_key: Task_Validate_Sales
+          depends_on:
+            - task_key: N1_Validate_Sales_Data
+          condition_task:
+            op: EQUAL_TO
+            left: "{{tasks.N1_Validate_Sales_Data.values.validation_status}}"
+            right: VALID
+        - task_key: Task_Archive_Sales
+          depends_on:
+            - task_key: Task_Validate_Sales
+              outcome: "true"
+          run_if: ALL_DONE
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab4/N3_Archive_Raw_Sales
+            base_parameters:
+              database_name: module2_db
+              sales_table_name: bronze_sales
+              archive_path_base: /Volumes/labdaysix/default/data/archived_sales/
+              validator_task_key: Task_Validate_Sales
+            source: WORKSPACE
+        - task_key: Task_Process_Sales
+          depends_on:
+            - task_key: Task_Validate_Sales
+              outcome: "true"
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab4/N2_Process_Sales_Data
+            base_parameters:
+              database_name: module2_db
+              sales_table_name: bronze_sales
+              customers_table_name: bronze_customers
+              products_table_name: bronze_products
+              output_table_name: silver_sales_enriched
+            source: WORKSPACE
+        - task_key: Task_Loop_By_Category
+          depends_on:
+            - task_key: Task_Process_Sales
+          for_each_task:
+            inputs: '["Electronics", "Apparel", "Home Goods", "Books", "Sports"]'
+            task:
+              task_key: SubTask_Process_Category_Data
+              notebook_task:
+                notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab4/N4_Process_Sales_By_Category
+                base_parameters:
+                  category_filter: "{{input}}"
+                  enriched_sales_table: silver_sales_enriched
+                  output_path_base: /Volumes/labdaysix/default/data/category_sales/
+                  database_name: module2_db
+                source: WORKSPACE
+        - task_key: Task_Handle_Invalid_Data
+          depends_on:
+            - task_key: Task_Validate_Sales
+              outcome: "false"
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab4/N2b_Handle_Invalid_Data
+            base_parameters:
+              validator_task_key: Task_Validate_Sales
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: STANDARD
