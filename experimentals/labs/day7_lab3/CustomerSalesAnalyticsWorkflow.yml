@@ -1,0 +1,44 @@
+resources:
+  jobs:
+    CustomerSalesAnalyticsWorkflow:
+      name: CustomerSalesAnalyticsWorkflow
+      tasks:
+        - task_key: First_Task
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab1/MyFirstNotebook
+            base_parameters:
+              input: Yutthana L.
+            source: WORKSPACE
+        - task_key: "01"
+          depends_on:
+            - task_key: First_Task
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab3/01_ingest_sales_data
+            source: WORKSPACE
+        - task_key: "02"
+          depends_on:
+            - task_key: First_Task
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab3/02_ingest_customer_data
+            source: WORKSPACE
+        - task_key: "03"
+          depends_on:
+            - task_key: "02"
+            - task_key: "01"
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab3/03_transform_and_merge
+            base_parameters:
+              sales_json: "{{tasks.01.values.ingested_data_json}}"
+              demog_json: "{{tasks.02.values.ingested_customer_data_json}}"
+            source: WORKSPACE
+        - task_key: "04"
+          depends_on:
+            - task_key: "03"
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/experimentals/labs/day7_lab3/04_generate_report
+            base_parameters:
+              merged_json: "{{tasks.03.values.merged_data_json}}"
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: STANDARD

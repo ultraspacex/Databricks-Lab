@@ -1,0 +1,14 @@
+resources:
+  jobs:
+    MyFirstJob:
+      name: MyFirstJob
+      tasks:
+        - task_key: MyFirstTask
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/labs/day7_lab1/MyFirstNotebook
+            base_parameters:
+              input: Yutthana L.
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: STANDARD

@@ -1,0 +1,24 @@
+{
+    "id": "208719fc-379f-4fd9-b8b3-9f481cb1760e",
+    "pipeline_type": "WORKSPACE",
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": true,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/labs/day6_lab1/Medallion_Pipeline_Python_Bronze_Silver"
+            }
+        },
+        {
+            "notebook": {
+                "path": "/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/labs/day6_lab1/Medallion_Pipeline_SQL_Gold"
+            }
+        }
+    ],
+    "name": "MedallionArchitecturePipeline",
+    "serverless": true,
+    "catalog": "labdaysix",
+    "schema": "sales"
+}
