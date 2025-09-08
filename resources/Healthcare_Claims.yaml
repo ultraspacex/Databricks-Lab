@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    Healthcare_Claims:
+      name: Healthcare Claims
+      tasks:
+        - task_key: Initialize
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/00_Initialize
+            source: WORKSPACE
+        - task_key: Ingestions
+          depends_on:
+            - task_key: Initialize
+          pipeline_task:
+            pipeline_id: 327fc744-898c-4dce-b8d9-0316766d165a
+            full_refresh: false
+        - task_key: Validate
+          depends_on:
+            - task_key: Ingestions
+          notebook_task:
+            notebook_path: /Workspace/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/03_validate_and_features
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: STANDARD

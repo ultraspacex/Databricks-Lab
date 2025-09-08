@@ -1,0 +1,24 @@
+{
+    "id": "327fc744-898c-4dce-b8d9-0316766d165a",
+    "pipeline_type": "WORKSPACE",
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": true,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/01_claims_pipeline_python_bronze_silver"
+            }
+        },
+        {
+            "notebook": {
+                "path": "/Users/ultraspacex@gmail.com/Databricks-Lab/notebooks/02_claims_pipeline_sql_gold"
+            }
+        }
+    ],
+    "name": "Healthcare Claims Pipeline",
+    "serverless": true,
+    "catalog": "healthcare",
+    "schema": "bronze"
+}
