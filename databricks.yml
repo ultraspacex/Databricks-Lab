@@ -1,0 +1,43 @@
+bundle:
+  name: healthcare_claims
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://${bundle.target}.cloud.databricks.com
+
+resources:
+  pipelines:
+    healthcare_claims_pipeline:
+      name: "Healthcare Claims Pipeline"       
+      serverless: true       
+      catalog: "healthcare"
+      target: "bronze"
+      libraries:
+        - notebook:
+            path: ../notebooks/01_claims_pipeline_python_bronze_silver.ipynb
+        - notebook:
+            path: ../notebooks/02_claims_pipeline_sql_gold.ipynb
+      development: true
+      continuous: false
+
+  jobs:
+    healthcare_claims_job:
+      name: "Healthcare Claims"
+      tasks:
+        - task_key: "Initialize"
+          notebook_task:
+            notebook_path: ../notebooks/00_Initialize.ipynb
+            
+        - task_key: "Ingestions"
+          depends_on:
+            - task_key: "Initialize"
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.healthcare_claims_pipeline.id}
+            
+        - task_key: "Validate"
+          depends_on:
+            - task_key: "Ingestions"
+          notebook_task:
+            notebook_path: ../notebooks/03_validate_and_features.ipynb
